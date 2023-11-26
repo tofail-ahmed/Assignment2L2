@@ -16,11 +16,11 @@ const createUser = async (req: Request, res: Response) => {
     console.log(error);
     res.status(404).json({
       success: 'false',
-      message: 'User not found',
-      error:{
-            code:404,
-            desciption:"User not found"
-      }
+      message: error.message||'User not found',
+      error: {
+        code: 404,
+        desciption: error.message || 'User not found',
+      },
     });
   }
 };
