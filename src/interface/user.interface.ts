@@ -1,4 +1,6 @@
-interface IUser {
+import { Model } from "mongoose";
+
+export interface IUser {
   userId: number;
   username: string;
   password: string;
@@ -17,5 +19,7 @@ interface IUser {
   };
  
 }
+export interface UserModel extends Model<IUser>{
+  isUserExists(id: string): Promise<IUser | null>;
+}
 
-export { IUser };

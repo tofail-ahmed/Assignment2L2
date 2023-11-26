@@ -1,7 +1,12 @@
 import { IUser } from '../interface/user.interface';
-import User from '../model/user.model';
+import  User  from '../model/user.model';
 
 const createUser = async (userData: IUser): Promise<IUser> => {
+  const existingUser = await User.isUserExists(userData.userId);
+  if (existingUser) {
+    throw new Error('User already exists');
+  }
+
   const result = await User.create(userData);
   return result;
 };

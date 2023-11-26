@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IUser } from '../interface/user.interface';
+import { IUser, UserModel } from '../interface/user.interface';
 
 const userSchema = new Schema<IUser>({
   userId: {
@@ -59,5 +59,9 @@ const userSchema = new Schema<IUser>({
     },
   },
 });
-const User = model<IUser>('User', userSchema);
+userSchema.statics.isUserExists = async function (userId: string) {
+  const existingUSer = await this.findOne({ userId });
+  return existingUSer;
+};
+const User = model<IUser,UserModel>('User', userSchema);
 export default User;
