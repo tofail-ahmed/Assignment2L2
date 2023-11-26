@@ -1,7 +1,9 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 import { IUser, UserModel } from '../interface/user.interface';
+import bcrypt from 'bcrypt';
+import config from '../config';
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser, UserModel>({
   userId: {
     type: Number,
     unique: true,
@@ -59,9 +61,24 @@ const userSchema = new Schema<IUser>({
     },
   },
 });
+
+userSchema.pre('save', async function (next) {
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round),
+  );
+  next();
+});
+userSchema.post('save', function (doc, next) {
+  // console.log(this, 'post hook:we saved  data');
+  doc.password = ' ';
+  next();
+});
+
 userSchema.statics.isUserExists = async function (userId: string) {
   const existingUSer = await this.findOne({ userId });
   return existingUSer;
 };
-const User = model<IUser,UserModel>('User', userSchema);
+const User = model<IUser, UserModel>('User', userSchema);
 export default User;

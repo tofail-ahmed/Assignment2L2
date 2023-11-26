@@ -11,16 +11,16 @@ const createUser = async (userData: IUser): Promise<IUser> => {
   return result;
 };
 const getAllUsers = async (): Promise<IUser[]> => {
-  const result = await User.find();
+  const result = await User.find().select('-password');
   return result;
 };
-// const getSingleUser = async (userId: string): Promise<IUser | null> => {
-//   const result = await User.findById(userId);
-//   return result;
-// };
+
 const getSingleUser = async (userId: string) => {
-  const result = await User.findOne({ userId });
-// const result=await User.aggregate([{$match:{userId:userId}}])
+  const existingUser = await User.isUserExists(userId);
+  if (!existingUser) {
+    throw new Error('User not found');
+  }
+  const result = await User.findOne({ userId }).select('-password')
 
   return result;
 };
@@ -34,8 +34,8 @@ const updateUser = async (
   });
   return result;
 };
-const deleteUser = async (userid: string): Promise<IUser | null> => {
-  const result = await User.findOneAndDelete(userid);
+const deleteUser = async (userId: string): Promise<IUser | null> => {
+  const result = await User.findOneAndDelete(userId);
   return result;
 };
 export const userServices = {
